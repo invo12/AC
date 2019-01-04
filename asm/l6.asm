@@ -98,12 +98,13 @@ lungime dd 5
 ;	mov ebx,[ebp + 12]
 ;	mov edi,[ebp + 8]
 ;	mov dl,[edi]
+;	xor ecx,ecx
 ;	cmp dl,'-'
 ;	jne dupa
 ;	mov ebp,0
+;	inc ecx
 ;dupa:
 ;	xor edx,edx
-;	xor ecx,ecx
 ;	mov [ebx],edx
 ;	mov esi,10
 ;bucla:
