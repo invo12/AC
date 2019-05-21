@@ -102,6 +102,7 @@ void rucsac(int M, int n, int w[], int p[], int x[])
 		s = interclasareGrafice(s, t);
 		t = puncte(s, w[i], p[i]);
 	}
+	s = interclasareGrafice(s, t);
 	afisare(s);
 	int xx = 0;
 	int yy = 0;
@@ -114,6 +115,9 @@ void rucsac(int M, int n, int w[], int p[], int x[])
 			break;
 		}
 	}
+	cout << endl;
+	cout << xx << ' ' << yy;
+	cout << endl;
 	for (int i = 0 ; i < n; ++i)
 	{
 		if (contine(s, xx - w[i], yy - p[i]))
@@ -131,7 +135,7 @@ void rucsac(int M, int n, int w[], int p[], int x[])
 }
 int main()
 {
-	int w[10], n,M=80;
+	int w[10], n,M=70;
 	int p[10];
 	int x[10] = { 0 };
 	cin >> n;

@@ -1,152 +1,232 @@
 #include<iostream>
 #include<vector>
-
+#include<algorithm>
+#include<fstream>
+#include<limits.h>
 using namespace std;
 
-struct Punct
+/*arbori ponderati
+struct Nod
 {
-	int x,y;
+	int data;
+	Nod* fiuStg, *fiuDrt;
 };
 
-Punct* punctNou(int x,int y)
+bool f(Nod* a, Nod* b)
 {
-	Punct* a;
-	a = new Punct;
-	a->x = x;
-	a->y = y;
-	return a;
+	return a->data > b->data;
 }
 
-vector<Punct*> interclasareGrafice(vector<Punct*> a, vector<Punct*> b)
+struct Nod
 {
-	vector<Punct*> temp;
-	int i = 0, j = 0;
-	while (i < a.size() && j < b.size())
-	{
-		if (a[i]->x < b[j]->x)
-		{
-			temp.push_back(a[i]);
-			++i;
-		}
-		else if(a[i]->x > b[j]->x)
-		{
-			temp.push_back(b[j]);
-			++j;
-		}
-		else
-		{
-			if (a[i]->y > b[j]->y)
-			{
-				temp.push_back(a[i]);
-			}
-			else
-			{
-				temp.push_back(b[j]);
-			}
-			++i;
-			++j;
-		}
-	}
-	while (i < a.size())
-	{
-		temp.push_back(a[i]);
-		++i;
+	int data;
+	Nod* fiuStg, *fiuDrt;
+};
 
-	}
-	while (j < b.size())
-	{
-		temp.push_back(b[j]);
-		++j;
-	}
-	return temp;
-}
-
-void afisare(vector<Punct*> a)
+void afisareVector(vector<Nod*> v)
 {
-	for (int i = 0; i < a.size(); ++i)
+	for (int i = 0; i < v.size(); ++i)
 	{
-		cout << a[i]->x << ' ' << a[i]->y << endl;
+		cout << v[i]->data << ' ';
 	}
 	cout << endl;
 }
 
-vector<Punct*> puncte(vector<Punct*> a, int w, int p)
+int main()
 {
-	vector<Punct*> temp;
-	for (int i = 0; i < a.size(); ++i)
+	vector<Nod*> v;
+	for (int i = 0; i < 8; ++i)
 	{
-		temp.push_back(punctNou(a[i]->x + w,a[i]->y + p));
+		Nod* a = new Nod();
+		cin>>a->data;
+		a->fiuStg = a->fiuDrt = nullptr;
+		v.push_back(a);
 	}
-	return temp;
-}
-
-bool contine(vector<Punct*> a, int x,int y)
-{
-	for (int i = 0; i < a.size(); ++i)
+	make_heap(v.begin(), v.end(), f);
+	while (v.size() > 1)
 	{
-		if (a[i]->x == x && a[i]->y == y)
+		Nod* t1 = v.front();
+		v.erase(v.begin());
+		Nod* t2 = v.front();
+		v.erase(v.begin());
+		Nod* r = new Nod;
+		r->data = t1->data + t2->data;
+		r->fiuStg = t1;
+		r->fiuDrt = t2;
+		v.push_back(r);
+		make_heap(v.begin(), v.end(), f);
+		afisareVector(v);
+	}
+	system("PAUSE");
+}
+*/
+
+/* DIJKSTRA
+
+ifstream f("in.txt");
+ofstream g("out.txt");
+
+bool amCeVizita(int* s, int n);
+int IndiceMinim(int* distanta, int* vizitat, int n);
+
+int main()
+{
+	int **a, *distanta, *vizitat, *predecesori, start, n;
+	f >> n;
+	a = new int*[n];
+	distanta = new int[n];
+	vizitat = new int[n];
+	predecesori = new int[n];
+	for (int i = 0; i < n; ++i)
+	{
+		vizitat[i] = 0;
+	}
+	for (int i = 0; i < n; ++i)
+	{
+		a[i] = new int[n];
+		for (int j = 0; j < n; ++j)
 		{
-			return true;
+			f >> a[i][j];
+			if (a[i][j] == -1)
+			{
+				a[i][j] = INT_MAX;
+			}
 		}
+	}
+	f >> start;
+	for (int i = 0; i < n; ++i)
+	{
+		distanta[i] = a[start][i];
+		predecesori[i] = start;
+	}
+	vizitat[start] = 1;
+	while (amCeVizita(vizitat, n))
+	{
+		int i = IndiceMinim(distanta, vizitat, n);
+		vizitat[i] = 1;
+		for (int j = 0; j < n; ++j)
+		{
+			if (vizitat[j] == 1 || a[i][j] == INT_MAX)
+				continue;
+			if (distanta[j] > distanta[i] + a[i][j])
+			{
+				distanta[j] = distanta[i] + a[i][j];
+				predecesori[j] = i;
+			}
+		}
+	}
+	for (int i = 0; i < n; ++i)
+	{
+		g << distanta[i] << ' ';
+	}
+	g << endl;
+	for (int i = 0; i < n; ++i)
+	{
+		g << predecesori[i] << ' ';
+	}
+}
+bool amCeVizita(int *s, int n)
+{
+	for (int i = 0; i < n; ++i)
+	{
+		if (s[i] == 0)
+			return true;
 	}
 	return false;
 }
-
-void rucsac(int M, int n, int w[], int p[], int x[])
+int IndiceMinim(int* distanta, int* vizitat, int n)
 {
-	vector<Punct*> s, t;
-	s.push_back(punctNou(0, 0));
-	t.push_back(punctNou(w[0], p[0]));
-	for (int i = 1; i < n; ++i)
+	int min = INT_MAX;
+	for (int i = 0; i < n; ++i)
 	{
-		s = interclasareGrafice(s, t);
-		t = puncte(s, w[i], p[i]);
-	}
-	s = interclasareGrafice(s, t);
-	afisare(s);
-	int xx = 0;
-	int yy = 0;
-	for (int i = s.size() - 1; i >= 0; --i)
-	{
-		if (s[i]->x <= M)
+		if (vizitat[i] == 1)
+			continue;
+		if (min > distanta[i])
 		{
-			xx = s[i]->x;
-			yy = s[i]->y;
-			break;
-		}
-	}
-	cout << endl;
-	cout << xx << ' ' << yy;
-	cout << endl;
-	for (int i = 0 ; i < n; ++i)
-	{
-		if (contine(s, xx - w[i], yy - p[i]))
-		{
-			x[i] = 1;
-			xx -= w[i];
-			yy -= p[i];
+			min = distanta[i];
 		}
 	}
 	for (int i = 0; i < n; ++i)
 	{
-		if (x[i])
-			cout << i << ' ';
+		if (vizitat[i] == 1)
+			continue;
+		if (min == distanta[i])
+			return i;
 	}
 }
+*/
+
+/*
+ifstream f("in.txt");
+ofstream g("out.txt");
+
 int main()
 {
-	int w[10], n,M=70;
-	int p[10];
-	int x[10] = { 0 };
-	cin >> n;
+	int **a,n,**distanta,**predecesori;
+	f >> n;
+	a = new int*[n];
+	distanta = new int*[n];
+	predecesori = new int*[n];
 	for (int i = 0; i < n; ++i)
 	{
-		cin >> w[i] >> p[i];
+		predecesori[i] = new int[n];
+		a[i] = new int[n];
+		distanta[i] = new int[n];
+		for (int j = 0; j < n; ++j)
+		{
+			f >> a[i][j];
+			predecesori[i][j] = i;
+			if (a[i][j] == -1)
+			{
+				predecesori[i][j] = -1;
+				a[i][j] = INT_MAX;
+			}
+		}
+		distanta[i][i] = 0;
 	}
-	rucsac(M, n, w, p, x);
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			if(i != j)
+				distanta[i][j] = a[i][j];
+		}
+	}
+	for (int k = 0; k < n; ++k)
+	{
+		for (int i = 0; i < n; ++i)
+		{
+			for (int j = 0; j < n; ++j)
+			{
+				if (distanta[i][k] == INT_MAX || distanta[k][j] == INT_MAX)
+					continue;
+				if (distanta[i][j] > distanta[i][k] + distanta[k][j])
+				{
+					distanta[i][j] = distanta[i][k] + distanta[k][j];
+					predecesori[i][j] = k;
+				}
+			}
+		}
+	}
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			if (distanta[i][j] != INT_MAX)
+				g << distanta[i][j] << ' ';
+			else
+				g << -1 << ' ';
+		}
+		g << endl;
+	}
+	for (int i = 0; i < n; ++i)
+	{
+		for (int j = 0; j < n; ++j)
+		{
+			g << predecesori[i][j] << ' ';
+		}
+		g << endl;
+	}
 }
-//4
-//30 2
-//10 1
-//40 4
-//20 3
+*/
+//80 20 40 100 30 10 70 50
